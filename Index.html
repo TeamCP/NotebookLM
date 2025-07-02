@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa Mental Interactivo: NotebookLM</title>
+    <style>
+        /* --- Estilos Generales --- */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Alinea arriba para ver desde el inicio */
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem;
+            box-sizing: border-box;
+            overflow-x: auto; /* Permite scroll horizontal si el mapa es muy ancho */
+        }
+
+        /* --- Contenedor del Mapa Mental --- */
+        .mindmap {
+            display: flex;
+            justify-content: flex-start; /* Alinea el nodo raíz a la izquierda */
+            align-items: center;
+            min-width: fit-content; /* Asegura que el contenedor se ajuste al contenido */
+            padding: 2rem 0; /* Espacio vertical */
+        }
+
+        .mindmap ul {
+            padding-left: 100px; /* Espacio para las líneas de conexión */
+            position: relative;
+            list-style: none;
+            margin: 0;
+        }
+
+        .mindmap li {
+            position: relative;
+            padding: 10px 0;
+        }
+
+        /* --- Estilos de los Nodos --- */
+        .node {
+            display: inline-block;
+            padding: 12px 20px;
+            border-radius: 8px;
+            background-color: #333;
+            border: 1px solid #444;
+            color: #f0f0f0;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            min-width: 200px; /* Ancho mínimo para nodos */
+            text-align: center;
+        }
+
+        /* Estilos específicos para el nodo raíz */
+        .node.root {
+            background-color: #4a3aff;
+            border-color: #6a5aff;
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+            transform: translateX(-50px); /* Centra mejor la raíz con las ramas */
+        }
+
+        /* Estilos para nodos de primer nivel */
+        .node.level-1 {
+            background-color: #2c5282; /* Azul oscuro */
+            border-color: #4a6fa5;
+        }
+
+        /* Estilos para nodos de segundo nivel (hojas) */
+        .node.level-2 {
+            background-color: #2d3748; /* Gris azulado */
+            border-color: #4a5568;
+            cursor: default; /* No hay más niveles para expandir */
+        }
+
+        .node:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            border-color: #888;
+        }
+        
+        .node.root:hover {
+             transform: scale(1.05) translateX(-50px);
+        }
+
+        /* --- Líneas de Conexión --- */
+        .mindmap li::before, .mindmap li::after {
+            content: '';
+            position: absolute;
+            left: -60px; /* Posiciona el inicio de la línea */
+            border-color: #555;
+            border-style: solid;
+            border-width: 0 0 1px 1px;
+        }
+
+        /* Línea horizontal desde el nodo */
+        .mindmap li::before {
+            top: 50%;
+            width: 60px;
+            height: 0;
+            border-width: 1px 0 0 1px;
+        }
+
+        /* Línea vertical que conecta hermanos */
+        .mindmap li::after {
+            top: 0;
+            width: 0;
+            height: 100%;
+            border-width: 0 0 1px 1px;
+        }
+
+        /* Ajustes para la primera y última línea vertical */
+        .mindmap li:first-child::after {
+            top: 50%;
+            height: 50%;
+        }
+
+        .mindmap li:last-child::after {
+            height: 50%;
+        }
+        
+        /* Oculta la línea vertical si solo hay un hijo */
+        .mindmap li:only-child::after {
+            display: none;
+        }
+
+        /* --- Interactividad --- */
+        .children {
+            display: block; /* Por defecto, los hijos son visibles */
+            transition: all 0.4s ease-in-out;
+        }
+
+        .children.collapsed {
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="mindmap">
+        <!-- Nodo Raíz -->
+        <div class="node root">NotebookLM: Herramienta de IA de Google</div>
+
+        <!-- Ramas Principales -->
+        <ul>
+            <li>
+                <div class="node level-1" data-toggle="children-1">Descripción General</div>
+                <ul id="children-1" class="children">
+                    <li><div class="node level-2">Producto gratuito de Google</div></li>
+                    <li><div class="node level-2">Base de datos personalizada con IA</div></li>
+                    <li><div class="node level-2">Potente y Versátil</div></li>
+                    <li><div class="node level-2">Infravalorada</div></li>
+                    <li><div class="node level-2">Basado en Gemini 2.0/2.5 Pro</div></li>
+                    <li><div class="node level-2">Alta precisión, baja alucinación</div></li>
+                </ul>
+            </li>
+            <li>
+                <div class="node level-1" data-toggle="children-2">Fuentes Soportadas (Multimodal)</div>
+                <ul id="children-2" class="children">
+                    <li><div class="node level-2">Documentos PDF</div></li>
+                    <li><div class="node level-2">Archivos de texto (.txt)</div></li>
+                    <li><div class="node level-2">Google Drive (Docs, Slides)</div></li>
+                    <li><div class="node level-2">Enlaces Web (URLs)</div></li>
+                    <li><div class="node level-2">Enlaces YouTube (URLs de videos)</div></li>
+                    <li><div class="node level-2">Archivos de Audio (.mp3)</div></li>
+                    <li><div class="node level-2">Transcripciones de videollamadas (vía YouTube)</div></li>
+                    <li><div class="node level-2">Libros completos</div></li>
+                    <li><div class="node level-2">Límite: Hasta 50 fuentes por cuaderno (Gratis)</div></li>
+                    <li><div class="node level-2">Límite: Hasta 300 fuentes por cuaderno (Premium)</div></li>
+                    <li><div class="node level-2">Límite: 500.000 palabras por archivo</div></li>
+                </ul>
+            </li>
+            <li>
+                <div class="node level-1" data-toggle="children-3">Funcionalidades Clave</div>
+                <ul id="children-3" class="children">
+                    <li><div class="node level-2">Conversación con Notas (Chat)</div></li>
+                    <li><div class="node level-2">Resúmenes/Briefings</div></li>
+                    <li><div class="node level-2">Guías de Estudio</div></li>
+                    <li><div class="node level-2">Esquemas</div></li>
+                    <li><div class="node level-2">Cuestionarios (Pregunta/Respuesta)</div></li>
+                    <li><div class="node level-2">Glosarios</div></li>
+                    <li><div class="node level-2">Análisis de Documentos Largos</div></li>
+                    <li><div class="node level-2">Análisis de Libros Completos</div></li>
+                    <li><div class="node level-2">Creación de Cronologías/Líneas de Tiempo</div></li>
+                    <li><div class="node level-2">Transcripción de Audio/Video</div></li>
+                    <li><div class="node level-2">Generación de Podcast (conversacional)</div></li>
+                    <li><div class="node level-2">Mapas Conceptuales/Mentales</div></li>
+                    <li><div class="node level-2">Guardar respuestas como notas</div></li>
+                    <li><div class="node level-2">Explorador de Fuentes</div></li>
+                    <li><div class="node level-2">Soporte para Múltiples Fuentes</div></li>
+                </ul>
+            </li>
+            <li>
+                <div class="node level-1" data-toggle="children-4">Casos de Uso (Ejemplos Prácticos)</div>
+                <ul id="children-4" class="children">
+                    <li><div class="node level-2">Investigación Académica</div></li>
+                    <li><div class="node level-2">Creación de Contenido</div></li>
+                    <li><div class="node level-2">Preparación de Presentaciones</div></li>
+                    <li><div class="node level-2">Gestión de Notas de Voz</div></li>
+                    <li><div class="node level-2">Análisis de Reuniones/Videollamadas</div></li>
+                    <li><div class="node level-2">Diseño de Productos/Apps</div></li>
+                    <li><div class="node level-2">Creación de Material Educativo</div></li>
+                    <li><div class="node level-2">Optimización del Workflow de Trabajo</div></li>
+                    <li><div class="node level-2">Mejora del rendimiento del equipo</div></li>
+                    <li><div class="node level-2">Diseño de Landing Pages</div></li>
+                    <li><div class="node level-2">Generación de Guiones para Video</div></li>
+                </ul>
+            </li>
+            <li>
+                <div class="node level-1" data-toggle="children-5">Integración con Otras Herramientas de IA</div>
+                <ul id="children-5" class="children">
+                    <li><div class="node level-2">Elicit (Buscar papeles académicos)</div></li>
+                    <li><div class="node level-2">Claude (Refinar planes/respuestas)</div></li>
+                    <li><div class="node level-2">Napkin (Crear infografías)</div></li>
+                    <li><div class="node level-2">Descript (Editar audio transcrito)</div></li>
+                    <li><div class="node level-2">ElevenLabs (Personalizar voces de podcast)</div></li>
+                    <li><div class="node level-2">HeyGen (Clonar voz, Avatares IA)</div></li>
+                    <li><div class="node level-2">Klav (Videos de Texto a Video)</div></li>
+                    <li><div class="node level-2">Udio (Generar música de fondo)</div></li>
+                    <li><div class="node level-2">DaVinci Resolve (Edición de video)</div></li>
+                    <li><div class="node level-2">Gemini 2.5 Pro (Modo Canvas, Interacción Visual)</div></li>
+                    <li><div class="node level-2">Firebase Studio (Crear apps reales desde prompt)</div></li>
+                    <li><div class="node level-2">Hostinger (Creación de sitios web/tiendas con IA)</div></li>
+                    <li><div class="node level-2">Gamma (Crear presentaciones con IA)</div></li>
+                </ul>
+            </li>
+             <li>
+                <div class="node level-1" data-toggle="children-6">Ventajas</div>
+                <ul id="children-6" class="children">
+                    <li><div class="node level-2">Consolidación de Información</div></li>
+                    <li><div class="node level-2">Ahorro de tiempo en investigación</div></li>
+                    <li><div class="node level-2">Análisis rápido de grandes volúmenes de texto</div></li>
+                    <li><div class="node level-2">Alta precisión en respuestas (basado en tus fuentes)</div></li>
+                    <li><div class="node level-2">Verificación de fuente de información</div></li>
+                    <li><div class="node level-2">Facilita la comprensión de temas complejos</div></li>
+                    <li><div class="node level-2">Generación de contenido profesional</div></li>
+                    <li><div class="node level-2">Gratuito para uso personal</div></li>
+                </ul>
+            </li>
+             <li>
+                <div class="node level-1" data-toggle="children-7">Limitaciones/Consideraciones</div>
+                <ul id="children-7" class="children">
+                    <li><div class="node level-2">Podcast por defecto en inglés (requiere personalización)</div></li>
+                    <li><div class="node level-2">Voces de podcast con acento diferente al de España</div></li>
+                    <li><div class="node level-2">Puede usar tu información para entrenar modelos (cautela)</div></li>
+                    <li><div class="node level-2">No hay importación masiva de URLs de YouTube</div></li>
+                    <li><div class="node level-2">Archivos grandes (PDF/Imágenes) pueden no leerse</div></li>
+                    <li><div class="node level-2">Ciertas páginas web no pueden subirse directamente</div></li>
+                    <li><div class="node level-2">Los chats se borran al cerrar (guardar en notas)</div></li>
+                    <li><div class="node level-2">Tiempo de carga/descarga de audio</div></li>
+                    <li><div class="node level-2">No soporta hojas de cálculo (Spreadsheets)</div></li>
+                    <li><div class="node level-2">Compartir públicamente limitado para Google Workspace</div></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <script>
+        // --- Lógica de Interactividad ---
+        document.addEventListener('DOMContentLoaded', function() {
+            // Selecciona todos los nodos que tienen hijos para hacerlos interactivos
+            const toggles = document.querySelectorAll('[data-toggle]');
+
+            toggles.forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    // Obtiene el ID del contenedor de hijos desde el atributo 'data-toggle'
+                    const childrenId = this.getAttribute('data-toggle');
+                    const childrenContainer = document.getElementById(childrenId);
+
+                    // Si el contenedor de hijos existe, alterna la clase 'collapsed'
+                    if (childrenContainer) {
+                        childrenContainer.classList.toggle('collapsed');
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
