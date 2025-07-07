@@ -68,12 +68,14 @@
             font-weight: 700;
             color: #fff;
             transform: translateX(-50px); /* Centra mejor la raíz con las ramas */
+            cursor: default;
         }
 
         /* Estilos para nodos de primer nivel */
         .node.level-1 {
             background-color: #2c5282; /* Azul oscuro */
             border-color: #4a6fa5;
+            padding-right: 40px; /* Espacio para el indicador +/- */
         }
 
         /* Estilos para nodos de segundo nivel (hojas) */
@@ -103,7 +105,6 @@
             border-width: 0 0 1px 1px;
         }
 
-        /* Línea horizontal desde el nodo */
         .mindmap li::before {
             top: 50%;
             width: 60px;
@@ -111,7 +112,6 @@
             border-width: 1px 0 0 1px;
         }
 
-        /* Línea vertical que conecta hermanos */
         .mindmap li::after {
             top: 0;
             width: 0;
@@ -119,29 +119,40 @@
             border-width: 0 0 1px 1px;
         }
 
-        /* Ajustes para la primera y última línea vertical */
-        .mindmap li:first-child::after {
+        .mindmap li:first-child::after { top: 50%; height: 50%; }
+        .mindmap li:last-child::after { height: 50%; }
+        .mindmap li:only-child::after { display: none; }
+
+        /* --- Indicador de expandir/colapsar --- */
+        .node.level-1::after {
+            content: '−'; /* Signo de menos para expandido */
+            position: absolute;
+            right: 15px;
             top: 50%;
-            height: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            font-weight: bold;
+            color: #a0aec0;
+            transition: transform 0.3s ease;
         }
 
-        .mindmap li:last-child::after {
-            height: 50%;
-        }
-        
-        /* Oculta la línea vertical si solo hay un hijo */
-        .mindmap li:only-child::after {
-            display: none;
+        .node.level-1.collapsed::after {
+            content: '+'; /* Signo de más para colapsado */
         }
 
-        /* --- Interactividad --- */
+        /* --- Interactividad y Animación --- */
         .children {
-            display: block; /* Por defecto, los hijos son visibles */
-            transition: all 0.4s ease-in-out;
+            transition: max-height 0.5s ease-in-out, opacity 0.3s ease-in-out;
+            overflow: hidden;
+            max-height: 1000px; /* Valor alto para asegurar que el contenido sea visible */
+            opacity: 1;
         }
 
         .children.collapsed {
-            display: none;
+            max-height: 0;
+            opacity: 0;
+            /* Asegura que esté oculto para accesibilidad y clics */
+            visibility: hidden; 
         }
 
     </style>
@@ -155,8 +166,8 @@
         <!-- Ramas Principales -->
         <ul>
             <li>
-                <div class="node level-1" data-toggle="children-1">Descripción General</div>
-                <ul id="children-1" class="children">
+                <div class="node level-1 collapsed" data-toggle="children-1">Descripción General</div>
+                <ul id="children-1" class="children collapsed">
                     <li><div class="node level-2">Producto gratuito de Google</div></li>
                     <li><div class="node level-2">Base de datos personalizada con IA</div></li>
                     <li><div class="node level-2">Potente y Versátil</div></li>
@@ -166,8 +177,8 @@
                 </ul>
             </li>
             <li>
-                <div class="node level-1" data-toggle="children-2">Fuentes Soportadas (Multimodal)</div>
-                <ul id="children-2" class="children">
+                <div class="node level-1 collapsed" data-toggle="children-2">Fuentes Soportadas (Multimodal)</div>
+                <ul id="children-2" class="children collapsed">
                     <li><div class="node level-2">Documentos PDF</div></li>
                     <li><div class="node level-2">Archivos de texto (.txt)</div></li>
                     <li><div class="node level-2">Google Drive (Docs, Slides)</div></li>
@@ -182,8 +193,8 @@
                 </ul>
             </li>
             <li>
-                <div class="node level-1" data-toggle="children-3">Funcionalidades Clave</div>
-                <ul id="children-3" class="children">
+                <div class="node level-1 collapsed" data-toggle="children-3">Funcionalidades Clave</div>
+                <ul id="children-3" class="children collapsed">
                     <li><div class="node level-2">Conversación con Notas (Chat)</div></li>
                     <li><div class="node level-2">Resúmenes/Briefings</div></li>
                     <li><div class="node level-2">Guías de Estudio</div></li>
@@ -202,8 +213,8 @@
                 </ul>
             </li>
             <li>
-                <div class="node level-1" data-toggle="children-4">Casos de Uso (Ejemplos Prácticos)</div>
-                <ul id="children-4" class="children">
+                <div class="node level-1 collapsed" data-toggle="children-4">Casos de Uso (Ejemplos Prácticos)</div>
+                <ul id="children-4" class="children collapsed">
                     <li><div class="node level-2">Investigación Académica</div></li>
                     <li><div class="node level-2">Creación de Contenido</div></li>
                     <li><div class="node level-2">Preparación de Presentaciones</div></li>
@@ -218,8 +229,8 @@
                 </ul>
             </li>
             <li>
-                <div class="node level-1" data-toggle="children-5">Integración con Otras Herramientas de IA</div>
-                <ul id="children-5" class="children">
+                <div class="node level-1 collapsed" data-toggle="children-5">Integración con Otras Herramientas de IA</div>
+                <ul id="children-5" class="children collapsed">
                     <li><div class="node level-2">Elicit (Buscar papeles académicos)</div></li>
                     <li><div class="node level-2">Claude (Refinar planes/respuestas)</div></li>
                     <li><div class="node level-2">Napkin (Crear infografías)</div></li>
@@ -236,8 +247,8 @@
                 </ul>
             </li>
              <li>
-                <div class="node level-1" data-toggle="children-6">Ventajas</div>
-                <ul id="children-6" class="children">
+                <div class="node level-1 collapsed" data-toggle="children-6">Ventajas</div>
+                <ul id="children-6" class="children collapsed">
                     <li><div class="node level-2">Consolidación de Información</div></li>
                     <li><div class="node level-2">Ahorro de tiempo en investigación</div></li>
                     <li><div class="node level-2">Análisis rápido de grandes volúmenes de texto</div></li>
@@ -249,8 +260,8 @@
                 </ul>
             </li>
              <li>
-                <div class="node level-1" data-toggle="children-7">Limitaciones/Consideraciones</div>
-                <ul id="children-7" class="children">
+                <div class="node level-1 collapsed" data-toggle="children-7">Limitaciones/Consideraciones</div>
+                <ul id="children-7" class="children collapsed">
                     <li><div class="node level-2">Podcast por defecto en inglés (requiere personalización)</div></li>
                     <li><div class="node level-2">Voces de podcast con acento diferente al de España</div></li>
                     <li><div class="node level-2">Puede usar tu información para entrenar modelos (cautela)</div></li>
@@ -278,8 +289,10 @@
                     const childrenId = this.getAttribute('data-toggle');
                     const childrenContainer = document.getElementById(childrenId);
 
-                    // Si el contenedor de hijos existe, alterna la clase 'collapsed'
                     if (childrenContainer) {
+                        // Alterna la clase en el nodo para el indicador +/-
+                        this.classList.toggle('collapsed');
+                        // Alterna la clase en la lista de hijos para mostrar/ocultar
                         childrenContainer.classList.toggle('collapsed');
                     }
                 });
